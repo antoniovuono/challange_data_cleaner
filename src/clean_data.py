@@ -1,50 +1,32 @@
 import pandas as pd
 
-# 1. Defina um caminho para o arquivo csv que vamos trabalhar
-data_path = "data/vendas_ficticias.csv"
+# 🔹 Etapa 1: Leitura do arquivo
 
-# 2. Faça a leitura do arquivo
+data_path = "data/vendas_ficticias.csv"
 df = pd.read_csv(data_path)
 
-# 3. Exiba as 5 primeiras linhas para aprender
-print("Primeiras linhas do dataset:")
-print(df.head())
+print(df)
 
-# 4. Capture informações básicas sobre tipos de dados e nulos
-print("Informações do dataframe:")
+# 🔹 Etapa 2: Diagnóstico e limpeza
+
+print("\n🔍 Diagnóstico inicial:")
 print(df.info())
-
-# 5. Verifique a quantidade de duplicatas na nossa base de dados
-print("Quantidade de itens duplicados:", df.duplicated().sum())
-# remvoer duplicatas
-df = df.drop_duplicates()
-print("Quantidade de itens duplicados:", df.duplicated().sum())
-
-# 6. Gere estatísticas básicas
-print("\n📊 Estatísticas descritivas:")
-print(df.describe(include='all'))
-
-# Verificar a quantidade de valores nulos por coluna
-print("Quantidade de valores nulos")
+print("\nValores nulos por coluna:")
 print(df.isnull().sum())
+print("\nduplicados:", df.duplicated().sum())
 
-# Forçar conversão das colunas numéricas:
-df["quantidade"] = pd.to_numeric(df["quantidade"], errors="coerce")
-df["preco_unitario"] = pd.to_numeric(df["preco_unitario"], errors="coerce")
-
-# Remover linhas com NaN ou preço <= 0:
-df = df.dropna(subset=["produto", "quantidade", "preco_unitario", "vendedor"])
+# 2.1 Limpeza
+df = df.drop_duplicates()
+df["quantidade"] = pd.to_numeric(df['quantidade'], errors="coerce")
+df["preco_unitario"] = pd.to_numeric(df['preco_unitario'], errors="coerce")
+df = df.dropna(subset=["produto", "quantidade", "preco_unitario","data", "vendedor"])
 df = df[df["preco_unitario"] > 0]
 
-print("\n✅ Dataset após limpeza:")
-print(df.info())
+# 🔹 Etapa 3: Análise e estatísticas
 
-# Criar coluna valor total (qunatidade x preço)
-df['valor_total'] = df['quantidade'] * df['preco_unitario']
-total_vendas = df['valor_total'].sum()
-print("O valor total de vendas:", total_vendas)
+# Descubra o valor total em vendas:
+df["valor_total"] = df["quantidade"] * df["preco_unitario"]
+print(f"\n Valor total de vendas: {df["valor_total"].sum():,.2f}")
 
-# Produto mais vendido por quantidade:
-produto_mais_vendido = df.groupby("produto")["quantidade"].sum().sort_values(ascending=False)
-print("\n📦 Produto mais vendido (por quantidade):")
-print(produto_mais_vendido.head(1))
+print("\n Produto mais vendido:")
+print(df.groupby("produto")["quantidade"].sum().sort_values(ascending=False).head(1))

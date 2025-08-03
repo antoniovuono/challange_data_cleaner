@@ -28,6 +28,7 @@ df = df[df["preco_unitario"] > 0]
 df["valor_total"] = df["quantidade"] * df["preco_unitario"]
 print(f"\n Valor total de vendas: {df["valor_total"].sum():,.2f}")
 
+
 print("\n Produto mais vendido:")
 # Agrupa por produtos, pega a coluna quantidade e traz a soma, ordena do maior para o menor e pega o primeiro.
 print(df.groupby("produto")["quantidade"].sum().sort_values(ascending=False).head(1))
